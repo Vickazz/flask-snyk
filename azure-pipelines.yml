@@ -1,0 +1,41 @@
+trigger:
+  - main   # runs pipeline when code is pushed to main branch
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  # Step 1: Set up Python
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.11'
+    displayName: 'Set up Python'
+
+  # Step 2: Install dependencies
+  - script: |
+      pip install -r requirements.txt
+    displayName: 'Install Python dependencies'
+
+  # Step 3: Install Snyk CLI
+  - script: |
+      npm install -g snyk
+    displayName: 'Install Snyk CLI'
+
+  # Step 4: Run Snyk dependency scan
+  - script: snyk test
+    displayName: 'Run Snyk Dependency Scan'
+    env:
+      SNYK_TOKEN: $(SNYK_TOKEN)
+
+  # Step 5: Run Snyk SAST (code scan)
+  - script: snyk code test
+    displayName: 'Run Snyk Code Scan'
+    env:
+      SNYK_TOKEN: $(SNYK_TOKEN)
+
+  # Step 6: Optional - Use official Snyk task for reporting
+  - task: SnykSecurityScan@1
+    inputs:
+      serviceConnectionEndpoint: 'SnykServiceConnection'
+      testType: 'app'
+      failOnIssues: true
