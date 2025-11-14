@@ -1,5 +1,5 @@
 trigger:
-  - main   # runs pipeline when code is pushed to main branch
+  - main   # pipeline runs when code is pushed to main branch
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -21,21 +21,15 @@ steps:
       npm install -g snyk
     displayName: 'Install Snyk CLI'
 
-  # Step 4: Run Snyk dependency scan
+  # Step 4: Run Snyk Dependency Scan
   - script: snyk test
     displayName: 'Run Snyk Dependency Scan'
     env:
       SNYK_TOKEN: $(SNYK_TOKEN)
 
-  # Step 5: Run Snyk SAST (code scan)
+  # Step 5: Run Snyk Code Scan (SAST)
   - script: snyk code test
     displayName: 'Run Snyk Code Scan'
     env:
       SNYK_TOKEN: $(SNYK_TOKEN)
 
-  # Step 6: Optional - Use official Snyk task for reporting
-  - task: SnykSecurityScan@1
-    inputs:
-      serviceConnectionEndpoint: 'SnykServiceConnection'
-      testType: 'app'
-      failOnIssues: true
