@@ -1,9 +1,19 @@
-trigger:
-- main
-
 pool:
   name: LocalPool
 
 steps:
-- script: echo "Hello from Gokul's LocalPool agent!"
-  displayName: 'Test LocalPool Agent'
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+  displayName: 'Set up Python'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
+
+- script: |
+    pip install snyk
+    snyk auth $(SNYK_TOKEN)
+    snyk test --severity-threshold=high
+  displayName: 'Run Snyk SAST scan'
