@@ -1,0 +1,9 @@
+trigger:
+- main
+
+pool:
+  name: LocalPool
+
+steps:
+- script: echo "Hello from Gokul's LocalPool agent!"
+  displayName: 'Test LocalPool Agent'
